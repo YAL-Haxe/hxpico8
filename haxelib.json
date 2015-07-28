@@ -1,0 +1,11 @@
+{
+	"name": "hxpico8",
+	"url": "http://yal.cc",
+	"license": "MIT",
+	"tags": ["lua", "retro", "pico8", "voxatron"],
+	"description": "Experimental Lua target for Pico-8 fantasy console.",
+	"version": "1.0.0",
+	"releasenote": "",
+	"contributors": ["YellowAfterlife"],
+	"dependencies": {}
+}
