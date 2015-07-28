@@ -26,3 +26,8 @@ The project should be pointed generate either a .lua file, or to a .p8xm (which 
 You'll most likely want to use the `Pico` class, which maps the built-in functions of the console. Since Pico-8 does not include the standard Lua function set, very little of standard Haxe API is supported.
 
 For additional examples, see the [hxpico8 example repository](https://github.com/YellowAfterlife/hxpico8xm).
+
+### About
+hxpico8 is made by Vadim "[YellowAfterlife](http://yal.cc)" Dyachenko. [MIT license](LICENSE).
+
+You can find me on [Twitter](http://twitter.com/YellowAfterlife) / [Tumblr](http://yellowafterlife.tumblr.com/) / [VK](http://vk.com/yal_cc) if you want to.
