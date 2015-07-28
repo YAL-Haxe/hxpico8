@@ -63,7 +63,7 @@ class PgExprCall {
 				if (fields[0].name == "fileName" && fields[1].name == "lineNumber") {
 					r.addChar('"'.code);
 					switch (fields[0].expr.expr) {
-					case TConst(TString(s)): r.addString(s);
+					case TConst(TString(s)): r.addString(s.toLowerCase());
 					default:
 					}
 					r.addChar(":".code);
