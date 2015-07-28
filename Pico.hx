@@ -103,9 +103,9 @@ extern class Pico {
 	static function circfill(x:Fixed, y:Fixed, r:Fixed, ?color:Int):Void;
 	static function rect(x1:Fixed, y1:Fixed, x2:Fixed, y:Fixed, ?color:Int):Void;
 	static function rectfill(x1:Fixed, y1:Fixed, x2:Fixed, y:Fixed, ?color:Int):Void;
-	static function spr(sprite:Int, x:Int, y:Int, ?cols:Int, ?rows:Int, ?flip:Bool):Void;
+	static function spr(sprite:Int, x:Fixed, y:Fixed, ?cols:Fixed, ?rows:Fixed, ?flip:Bool):Void;
 	static function sspr(left:Fixed, top:Fixed, width:Fixed, height:Fixed, x:Fixed, y:Fixed, ?dw:Int, ?dh:Int, ?flip:Bool):Void;
-	static function map(col:Int, row:Int, x:Fixed, y:Fixed, ?cols:Int, ?rows:Int, ?flags:Int):Void;
+	static function map(col:Fixed, row:Fixed, x:Fixed, y:Fixed, ?cols:Fixed, ?rows:Fixed, ?flags:Int):Void;
 	//}
 	//{ collections
 	/// Converts 0-based declaration into 1-based declaration
