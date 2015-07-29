@@ -15,7 +15,12 @@ class PgExpr {
 	static function addConst(r:PgBuffer, c:TConstant) {
 		switch (c) {
 		case TInt(i): r.addInt(i);
-		case TFloat(f): r.add(f);
+		case TFloat(f): {
+			var len = f.length;
+			if (f.charCodeAt(len - 1) == ".".code) {
+				r.addSub(f, 0, len - 1);
+			} else r.add(f);
+		}
 		case TString(s): {
 			var dq:Bool = (s.indexOf('"') < 0) || (s.indexOf("'") >= 0);
 			r.addChar(dq ? '"'.code : "'".code);
