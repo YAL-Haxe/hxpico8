@@ -1,4 +1,5 @@
 package p8gen;
+import haxe.macro.Context;
 import haxe.macro.Type;
 import haxe.macro.TypedExprTools;
 import p8gen.PgExpr.*;
@@ -91,7 +92,8 @@ class PgOpt {
 								default:
 								}
 								// next expression must contain exactly one mention:
-								if (countLocal(next, v_id) != 1) break;
+								var vc = countLocalExt(next, v_id);
+								if (vc.writes != 0 || vc.reads != 1) break;
 								var valid = true;
 								// Don't merge into local function calls:
 								var f = null; f = function(e:TypedExpr) {
@@ -124,10 +126,56 @@ class PgOpt {
 						k++;
 					} // while (k < n)
 					firstPass = false;
-				}
+				} // while (check)
 				if (arr.length == 1) e.expr = arr[0].expr;
 			default:
 			} // switch
+		}; f(e);
+		//}
+		//{ Inline local variables with constant values and no modifications
+		f = function(e:TypedExpr) {
+			iter(e, f);
+			switch (e.expr) {
+			case TBlock(arr):
+				var len = arr.length;
+				var k = 0;
+				while (k < len) {
+					switch (arr[k].expr) {
+					case TVar(v, e1 = { expr: TConst(_) }):
+						var v_id = v.id;
+						var vc = countLocalExt(e, v_id);
+						if (vc.writes == 0) {
+							arr.splice(k, 1); len--;
+							replaceLocal(e, v_id, e1);
+						} else k++;
+					default: k++;
+					}
+				}
+			default:
+			}
+		}; f(e);
+		//}
+		//{ `var i; i = v;` -> `var i = v;`
+		f = function(e:TypedExpr) {
+			iter(e, f);
+			switch (e.expr) {
+			case TBlock(arr):
+				var len = arr.length;
+				var k = 0;
+				while (k < len) {
+					switch (arr[k].expr) {
+					case TVar(v, null) if (k + 1 < len):
+						switch (arr[k + 1].expr) {
+						case TBinop(OpAssign, { expr: TLocal(v2) }, e1) if (v2.id == v.id):
+							arr[k].expr = TVar(v, e1);
+							arr.splice(k + 1, 1); len--;
+						default: k++;
+						}
+					default: k++;
+					}
+				}
+			default:
+			}
 		}; f(e);
 		//}
 		//
@@ -142,6 +190,35 @@ class PgOpt {
 			}
 		}; f(e);
 		return r;
+	}
+	static function countLocalExt(e:TypedExpr, localId:Int) {
+		var reads:Int = 0;
+		var writes:Int = 0;
+		var isWrite:Bool = false;
+		var f:TypedExpr->Void = null;
+		f = function(e:TypedExpr):Void {
+			switch (e.expr) {
+			case TLocal(v):
+				if (v.id == localId) reads++;
+			case TUnop(OpIncrement, _, { expr: TLocal(v) })
+				|TUnop(OpDecrement, _, { expr: TLocal(v) }):
+				if (v.id == localId) {
+					reads++;
+					writes++;
+				}
+			case TBinop(OpAssign, { expr: TLocal(v) }, e1)
+				|TBinop(OpAssignOp(_), { expr: TLocal(v) }, e1):
+				if (v.id == localId) {
+					writes++;
+				}
+				f(e1);
+			default: iter(e, f);
+			}
+		}; f(e);
+		return {
+			reads: reads,
+			writes: writes
+		};
 	}
 	static function replaceLocal(e:TypedExpr, localId:Int, n:TypedExpr):Void {
 		var f:TypedExpr->Void = null;
