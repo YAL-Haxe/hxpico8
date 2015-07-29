@@ -64,11 +64,11 @@ class PgMain {
 		}
 		//
 		var r = new PgBuffer();
-		#if debug
+		/*#if debug
 		r.addString("-- ");
 		r.addString(Date.now().toString());
 		r.addLine();
-		#end
+		#end*/
 		for (t in PgType.list) t.print(r);
 		if (api_main != null) {
 			PgExpr.addExpr(r, api_main);
