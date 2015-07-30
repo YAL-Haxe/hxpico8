@@ -75,6 +75,17 @@ class PgExpr {
 			r.addLine( -1);
 			r.addString("end");
 		}
+		function iterForGen(v:TVar, eiter:TypedExpr, eblock:TypedExpr) {
+			r.addString("for ");
+			r.addString(v.name);
+			r.addString(" in ");
+			r.addExpr(eiter);
+			r.addString(" do");
+			r.addLine(1);
+			r.addExpr(eblock);
+			r.addLine( -1);
+			r.addString("end");
+		}
 		//}
 		switch (e.expr) {
 		case TConst(c): addConst(r, c);
@@ -255,15 +266,35 @@ class PgExpr {
 			}
 		}
 		case TFor(v, eiter, eblock): {
-			r.addString("for ");
-			r.addString(v.name);
-			r.addString(" in ");
-			r.addExpr(eiter);
-			r.addString(" do");
-			r.addLine(1);
-			r.addExpr(eblock);
-			r.addLine( -1);
-			r.addString("end");
+			switch (eiter.expr) {
+			case TCall(ecall, args):
+				var call = {
+					var b = new PgBuffer();
+					b.addExpr(ecall);
+					b.toString();
+				};
+				switch (call) {
+				case "loop": {
+					r.addString("for ");
+					r.addString(v.name);
+					r.addSepChar("=".code);
+					r.addExpr(args[0]);
+					r.addComma();
+					r.addExpr(args[1]);
+					if (args.length > 2) {
+						r.addComma();
+						r.addExpr(args[2]);
+					}
+					r.addString(" do");
+					r.addLine(1);
+					r.addExpr(eblock);
+					r.addLine( -1);
+					r.addString("end");
+				}
+				default: iterForGen(v, eiter, eblock);
+				}
+			default: iterForGen(v, eiter, eblock);
+			}
 		}
 		case TIf(econd, ethen, eelse): {
 			r.addString("if ");

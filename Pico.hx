@@ -163,5 +163,7 @@ extern class Pico {
 		return flr(rand(x));
 	}
 	@:native("srand") static function srand(seed:Int):Void;
+	/// maps to Lua' arithmetic loop.
+	static function loop(from:Fixed, to:Fixed, step:Fixed = 1):Iterator<Fixed>;
 	//}
 }
