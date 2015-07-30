@@ -107,7 +107,7 @@ class PgClass extends PgType {
 			}
 			r.indent--;
 			if (r.length > len) {
-				r.addLine();
+				r.addLineSep();
 			} else r.addSep();
 			r.addChar("}".code);
 			return r;
