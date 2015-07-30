@@ -103,7 +103,7 @@ extern class Pico {
 	static function circfill(x:Fixed, y:Fixed, r:Fixed, ?color:Int):Void;
 	static function rect(x1:Fixed, y1:Fixed, x2:Fixed, y:Fixed, ?color:Int):Void;
 	static function rectfill(x1:Fixed, y1:Fixed, x2:Fixed, y:Fixed, ?color:Int):Void;
-	static function spr(sprite:Int, x:Fixed, y:Fixed, ?cols:Fixed, ?rows:Fixed, ?flip:Bool):Void;
+	static function spr(sprite:Fixed, x:Fixed, y:Fixed, ?cols:Fixed, ?rows:Fixed, ?flip:Bool):Void;
 	static function sspr(left:Fixed, top:Fixed, width:Fixed, height:Fixed, x:Fixed, y:Fixed, ?dw:Int, ?dh:Int, ?flip:Bool):Void;
 	static function map(col:Fixed, row:Fixed, x:Fixed, y:Fixed, ?cols:Fixed, ?rows:Fixed, ?flags:Int):Void;
 	//}
@@ -148,7 +148,7 @@ extern class Pico {
 	static function sub(s:String, from:Int, ?to:Int):String;
 	static function flr(x:Fixed):Int;
 	static function abs(x:Fixed):Fixed;
-	static function sign(x:Fixed):Int;
+	@:native("sgn") static function sign(x:Fixed):Int;
 	static function sqrt(x:Fixed):Fixed;
 	static function max(x:Fixed, y:Fixed):Fixed;
 	static function min(x:Fixed, y:Fixed):Fixed;
