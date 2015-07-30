@@ -26,17 +26,26 @@ class PgExprCall {
 		}
 	}
 	static function addExprCall(r:PgBuffer, e:TypedExpr, args:Array<TypedExpr>) {
-		var fname = {
-			var b = new PgBuffer();
-			b.addExpr(e);
-			b.toString();
-		};
+		var fnbuf = new PgBuffer();
+		var fname = null;
 		//
 		var inst:TypedExpr = null;
 		switch (e.expr) {
 		case TField(e, fa):
 			inst = e;
 			switch (fa) {
+			case FInstance(ct_ref, _, cf_ref) | FClosure({ c: ct_ref }, cf_ref):
+				var cf = cf_ref.get();
+				switch (cf.kind) {
+				case FMethod(MethDynamic):
+					// inst.method(inst, ...) -> inst:method(...)
+					fnbuf.addExpr(e);
+					fnbuf.addChar(":".code);
+					fnbuf.addString(cf.name);
+					fname = fnbuf.toString();
+					inst = null;
+				default:
+				}
 			case FEnum(et_ref, ef):
 				r.addChar("{".code);
 				r.addSep();
@@ -52,6 +61,10 @@ class PgExprCall {
 			default:
 			}
 		default:
+		}
+		if (fname == null) {
+			fnbuf.addExpr(e);
+			fname = fnbuf.toString();
 		}
 		//
 		switch (fname) {
