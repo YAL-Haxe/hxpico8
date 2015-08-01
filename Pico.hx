@@ -28,9 +28,9 @@ extern class Pico {
 	/// If color is not specified, the current color is used.
 	static function sset(x:Fixed, y:Fixed, ?color:Int):Void;
 	/// Returns the value of sprite's flag.
-	static function fget(sprite:Int, flag:Int):Void;
+	static function fget(sprite:Int, flag:Int):Bool;
 	/// Returns sprite's flags as bits
-	@:native("fset") static function fgetx(sprite:Int):Void;
+	@:native("fget") static function fgetx(sprite:Int):Int;
 	/// Changes the value of sprite's flag
 	static function fset(sprite:Int, flag:Int, value:Bool):Void;
 	/// Changes sprite's flags.
