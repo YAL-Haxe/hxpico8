@@ -12,6 +12,8 @@ using p8gen.PgPath;
  */
 @:publicFields
 class PgExpr {
+	/// whether currently printing into the global scope (not inside any function)
+	static var globalScope:Bool = false;
 	static function addConst(r:PgBuffer, c:TConstant) {
 		switch (c) {
 		case TInt(i): r.addInt(i);
@@ -225,7 +227,7 @@ class PgExpr {
 		case TUnop(OpNegBits, false, e1): r.addString("bnot("); r.addExpr(e1); r.addChar(")".code);
 		case TFunction(f): PgExprFunction.addExprFunction(r, null, f);
 		case TVar(v, e1): {
-			r.addString("local ");
+			if (!globalScope) r.addString("local ");
 			r.addString(v.name);
 			if (e1 != null) {
 				r.addSepChar("=".code);
@@ -394,12 +396,24 @@ class PgExpr {
 		}
 		}
 	}
+	static inline function addExprGlobal(r:PgBuffer, e:TypedExpr):Void {
+		var _gs = globalScope;
+		globalScope = true;
+		r.addExpr(e);
+		globalScope = _gs;
+	}
 	static inline function modExpr(src:TypedExpr, expr:TypedExprDef):TypedExpr {
 		return { expr: expr, pos: src.pos, t: src.t };
 	}
 	static inline function makeVar(name:String, ?type:Type, ?id:Int):TVar {
 		return { name: name, id: id, t: type, capture: false, extra: null };
 	}
+	static inline function makeRef<T>(v:T):Ref<T> {
+		return {
+			get: function():T return v,
+			toString: function():String return Std.string(v)
+		};
+	};
 	static function offsetInt(e:TypedExpr, d:Int):TypedExpr {
 		e = unpackExpr(e);
 		var rx:TypedExprDef;

@@ -7,14 +7,18 @@ import haxe.macro.Type;
  */
 @:publicFields
 class PgClassField extends PgField {
+	/// class containing this field
 	var parentClass:PgClass;
+	var classField:ClassField;
 	var kind:FieldKind;
+	/// function' instance (if field is a function)
 	var func:TFunc = null;
 	/// field' initial value
 	var expr:TypedExpr;
 	function new(t:PgClass, f:ClassField, isInst:Bool) {
 		parentType = t;
 		parentClass = t;
+		classField = f;
 		name = f.name;
 		type = f.type;
 		kind = f.kind;

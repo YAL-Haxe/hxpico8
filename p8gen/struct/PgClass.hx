@@ -19,11 +19,18 @@ class PgClass extends PgType {
 	var classType:ClassType;
 	var parent:PgClass = null;
 	var children:Array<PgClass> = [];
+	/// static field' list
 	var statics:Array<PgClassField> = [];
+	/// instance field' list
 	var fields:Array<PgClassField> = [];
+	/// static field' map
 	var staticsMap:Map<String, PgClassField> = new Map();
+	/// instance field' map
 	var fieldsMap:Map<String, PgClassField> = new Map();
-	var constructor:PgClassField;
+	/// `function new(...)` field, if any
+	var constructor:PgClassField = null;
+	/// `static function __init__()` expression, if any
+	var initExpr:TypedExpr;
 	function new(t:ClassType) {
 		super(t);
 		map.wrapSet(this, this);
@@ -36,6 +43,7 @@ class PgClass extends PgType {
 		if (t.constructor != null) {
 			constructor = new PgClassField(this, t.constructor.get(), true);
 		}
+		initExpr = t.init;
 	}
 	/// prints _create/_new functions
 	function printCtr(r:PgBuffer) {
@@ -177,14 +185,23 @@ class PgClass extends PgType {
 		if (isExtern) return;
 		current = this;
 		var b = new PgBuffer();
+		var init = new PgBuffer();
 		for (f in statics) if (!f.isExtern) {
 			switch (f.kind) {
 			case FVar(_, _):
 				if (f.expr != null) {
-					b.addString(f.path);
-					b.addSepChar("=".code);
-					PgExpr.addExpr(b, f.expr);
-					b.addLine();
+					var fx:TypedExpr = {
+						expr: null,
+						pos: f.classField.pos,
+						t: f.type,
+					};
+					var ct_ref = PgExpr.makeRef(classType);
+					init.addExprGlobal(fx.modExpr(TBinop(OpAssign,
+						fx.modExpr(TField(
+							fx.modExpr(TTypeExpr(TClassDecl(ct_ref))),
+							FStatic(ct_ref, PgExpr.makeRef(f.classField)))),
+						f.expr)));
+					init.addLine();
 				}
 			case FMethod(k):
 				if (f.func != null) {
@@ -192,6 +209,10 @@ class PgClass extends PgType {
 					b.addLine();
 				}
 			}
+		}
+		if (initExpr != null) {
+			init.addExpr(initExpr);
+			init.addLine();
 		}
 		for (f in fields) if (!f.isExtern) {
 			switch (f.kind) {
@@ -212,6 +233,16 @@ class PgClass extends PgType {
 			r.addLine();
 			#end
 			r.addBuffer(b);
+		}
+		if (init.length > 0) {
+			var ri = PgMain.init;
+			#if debug
+			ri.addString("-- ");
+			ri.addString(path);
+			ri.addChar(":".code);
+			ri.addLine();
+			#end
+			ri.addBuffer(init);
 		}
 	}
 }

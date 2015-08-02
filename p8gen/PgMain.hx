@@ -4,6 +4,7 @@ import haxe.macro.Compiler;
 import haxe.macro.Context;
 import haxe.macro.Expr.Position;
 import haxe.macro.JSGenApi;
+import haxe.macro.Type;
 import p8gen.struct.*;
 import sys.FileSystem;
 import sys.io.File;
@@ -14,6 +15,7 @@ import sys.io.File;
 @:publicFields
 class PgMain {
 	static var api:JSGenApi;
+	static var init:PgBuffer;
 	static inline function error(text:String, pos:Position) {
 		Context.error(text, pos);
 	}
@@ -52,11 +54,9 @@ class PgMain {
 				switch (cf.kind) {
 				case FMethod(MethInline):
 					var c = PgClass.map.baseGet(ct_ref.get());
-					for (f in c.statics) if (f.name == cf.name) {
-						f.isExtern = true;
-						api_main = f.func.expr;
-						break;
-					}
+					var cf2 = c.staticsMap[cf.name];
+					cf2.isExtern = true;
+					api_main = cf2.func.expr;
 				default:
 				}
 			default:
@@ -64,15 +64,16 @@ class PgMain {
 		}
 		//
 		var r = new PgBuffer();
-		/*#if debug
-		r.addString("-- ");
-		r.addString(Date.now().toString());
-		r.addLine();
-		#end*/
+		init = new PgBuffer();
 		for (t in PgType.list) t.print(r);
+		r.addBuffer(init);
 		if (api_main != null) {
-			PgExpr.addExpr(r, api_main);
+			#if debug
+			r.addString("--");
 			r.addLine();
+			#end
+			PgOpt.optExpr(api_main);
+			PgExpr.addExprGlobal(r, api_main);
 		}
 		// and save it:
 		var path = api.outputFile;
