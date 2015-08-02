@@ -69,10 +69,11 @@ class PgMain {
 		r.addBuffer(init);
 		if (api_main != null) {
 			#if debug
-			r.addString("--");
-			r.addLine();
+			if (r.length > 0) {
+				r.addString("--");
+				r.addLine();
+			}
 			#end
-			PgOpt.optExpr(api_main);
 			PgExpr.addExprGlobal(r, api_main);
 		}
 		// and save it:
