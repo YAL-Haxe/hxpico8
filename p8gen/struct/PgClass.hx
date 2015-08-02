@@ -100,13 +100,13 @@ class PgClass extends PgType {
 					switch (list[0].expr) {
 					case TBinop(OpAssign, 
 					{ expr: TField({ expr: TConst(TThis) }, FInstance(_, _, cf_ref)) },
-					{ expr: TConst(c) }):
+					e1 = { expr: TConst(_) | TLocal(_) }):
 						var name = cf_ref.get().name;
 						if (!fieldsMap.exists(name)) break;
 						handleTrail();
 						r.addString(name);
 						r.addSepChar("=".code);
-						r.addConst(c);
+						r.addExpr(e1);
 						list.shift();
 					default: break;
 					}
