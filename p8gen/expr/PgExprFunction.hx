@@ -53,7 +53,7 @@ class PgExprFunction {
 		if (!PgExpr.isEmpty(expr)) {
 			r.addLine(1);
 			addOptArgs(r, func.args, expr);
-			r.addExpr(expr);
+			r.addExprLocal(expr);
 			r.addLine( -1);
 		} else r.addSep();
 		r.addString("end");

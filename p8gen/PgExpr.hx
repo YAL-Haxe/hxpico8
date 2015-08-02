@@ -402,6 +402,12 @@ class PgExpr {
 		r.addExpr(e);
 		globalScope = _gs;
 	}
+	static inline function addExprLocal(r:PgBuffer, e:TypedExpr):Void {
+		var _gs = globalScope;
+		globalScope = false;
+		r.addExpr(e);
+		globalScope = _gs;
+	}
 	static inline function modExpr(src:TypedExpr, expr:TypedExprDef):TypedExpr {
 		return { expr: expr, pos: src.pos, t: src.t };
 	}
