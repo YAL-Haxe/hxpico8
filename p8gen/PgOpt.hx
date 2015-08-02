@@ -35,6 +35,7 @@ class PgOpt {
 		f = function(e:TypedExpr) switch (e.expr) {
 			case TSwitch(e1, cases, edef):
 				iter(e, f);
+				e1 = unpackExpr(e1);
 				switch (e1.expr) {
 				case TConst(_) | TLocal(_):
 				default:
