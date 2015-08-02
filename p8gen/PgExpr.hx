@@ -101,6 +101,11 @@ class PgExpr {
 				r.addChar("]".code);
 			}
 		}
+		case TBinop(OpAssign, { expr: TField(e1, FStatic(ctr, cfr)) }, { expr: TFunction(f) }): {
+			var c = PgClass.map.baseGet(ctr.get());
+			var cf = c.staticsMap.get(cfr.get().name);
+			PgExprFunction.addExprFunction(r, cf.path, f);
+		}
 		case TBinop(OpAssignOp(op), e1, e2): {
 			r.addExpr(e1);
 			switch (op) {
