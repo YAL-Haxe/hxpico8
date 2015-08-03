@@ -64,7 +64,11 @@ class PgExprField {
 			if (PgEnum.map.baseGet(et).isSimple) {
 				r.addInt(ef.index);
 			} else {
-				
+				r.addChar("{".code);
+				r.addSep();
+				r.addInt(ef.index);
+				r.addSep();
+				r.addChar("}".code);
 			}
 		}
 		default: error("This field access type is not supported.", e.pos);
