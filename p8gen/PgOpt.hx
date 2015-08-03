@@ -12,9 +12,9 @@ class PgOpt {
 	static inline function iter(e:TypedExpr, f:TypedExpr->Void) {
 		TypedExprTools.iter(e, f);
 	}
+	private static var continueIndex:Int = 1;
 	static function optExpr(e:TypedExpr) {
 		var f:TypedExpr->Void = null;
-		var z:Bool;
 		//{ `v = { ...; x; }` -> `{ ...; v = x; }`
 		f = function(e:TypedExpr) switch (e.expr) {
 			case TBinop(OpAssign, e1, e2x ):
@@ -31,6 +31,42 @@ class PgOpt {
 			default: iter(e, f);
 		}; f(e);
 		//}
+		{ // continue -> goto
+			var label:String = "continue" + continueIndex;
+			var found = 0;
+			var frepl = null;
+			frepl = function(e:TypedExpr) {
+				switch (e.expr) {
+				case TContinue:
+					found++;
+					e.expr = TCall(modExpr(e, TLocal(makeVar("`goto"))), [
+						modExpr(e, TConst(TString(label)))
+					]);
+				case TWhile(_, e1, _) | TFor(_, _, e1):
+					// don't go into unrelated loops
+				default: iter(e, frepl);
+				}
+			};
+			f = function(e:TypedExpr) {
+				iter(e, f);
+				switch (e.expr) {
+				case TWhile(_, e1, _) | TFor(_, _, e1):
+					found = 0;
+					frepl(e1);
+					if (found > 0) {
+						var labelExpr = modExpr(e, TCall(modExpr(e, TLocal(makeVar("`label"))), [
+							modExpr(e, TConst(TString(label)))
+						]));
+						switch (e1.expr) {
+						case TBlock(el): el.push(labelExpr);
+						default: e1.expr = TBlock([modExpr(e1, e1.expr), labelExpr]);
+						}
+						label = "continue" + ++continueIndex;
+					}
+				default:
+				}
+			}; f(e);
+		}
 		//{ switch (enum[1]) { ... } -> { var g = enum[1]; switch (g) { ... }
 		f = function(e:TypedExpr) switch (e.expr) {
 			case TSwitch(e1, cases, edef):

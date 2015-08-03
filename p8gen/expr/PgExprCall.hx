@@ -138,6 +138,22 @@ class PgExprCall {
 			addArgs(r, args, inst);
 			r.addChar(")".code);
 		}
+		case "`label", "`goto": {
+			var label:String = null;
+			switch (args[0].expr) {
+			case TConst(TString(s)): label = s;
+			case TLocal(v): label = v.name;
+			default: error("Must be called with a constant string or variable (label name)", args[0].pos);
+			}
+			if (fname.charCodeAt(1) == "l".code) {
+				r.addChar2(":".code, ":".code);
+				r.addString(label);
+				r.addChar2(":".code, ":".code);
+			} else {
+				r.addString("goto ");
+				r.addString(label);
+			}
+		}
 		default: {
 			r.addString(fname);
 			r.addChar("(".code);

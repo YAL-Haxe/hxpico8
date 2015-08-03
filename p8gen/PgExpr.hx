@@ -19,8 +19,11 @@ class PgExpr {
 		case TInt(i): r.addInt(i);
 		case TFloat(f): {
 			var len = f.length;
-			if (f.charCodeAt(len - 1) == ".".code) {
+			var dot = f.indexOf(".");
+			if (dot == len - 1) {
 				r.addSub(f, 0, len - 1);
+			} else if (dot >= 0 && dot < len - 7) {
+				r.addSub(f, 0, dot + 7);
 			} else r.add(f);
 		}
 		case TString(s): {
@@ -384,7 +387,7 @@ class PgExpr {
 			}
 		}
 		case TBreak: r.addString("break");
-		case TContinue: r.addString("continue");
+		// TContinue: (handled in PgOpt)
 		// TThrow
 		case TCast(e1, _): r.addExpr(e1);
 		case TMeta(_, e1): r.addExpr(e1);
