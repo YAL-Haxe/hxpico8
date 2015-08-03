@@ -227,8 +227,12 @@ class PgExpr {
 		case TUnop(OpNegBits, false, e1): r.addString("bnot("); r.addExpr(e1); r.addChar(")".code);
 		case TFunction(f): PgExprFunction.addExprFunction(r, null, f);
 		case TVar(v, e1): {
-			if (!globalScope) r.addString("local ");
-			r.addString(v.name);
+			if (globalScope) {
+				if (e1 != null) r.addString(v.name);
+			} else {
+				r.addString("local ");
+				r.addString(v.name);
+			}
 			if (e1 != null) {
 				r.addSepChar("=".code);
 				r.addExpr(e1);
