@@ -265,10 +265,10 @@ class PgExpr {
 				case TConst(_) | TLocal(_):
 				case TBlock(_) if (isEmpty(ei)):
 				default:
-					if (trail) {
-						r.addLine();
-					} else trail = true;
+					if (trail) r.addLine();
+					var len = r.length;
 					r.addExpr(ei);
+					trail = r.length > len;
 				}
 			}
 		}
