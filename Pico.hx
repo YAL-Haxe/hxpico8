@@ -124,9 +124,9 @@ extern class Pico {
 	static inline var btA:Int = 4;
 	static inline var btB:Int = 5;
 	/// Returns whether the given button is down.
-	static function btn(?index:Int, ?player:Int):Bool;
+	static function btn(index:Int, ?player:Int):Bool;
 	/// Returns whether the given button was pressed (includes "auto-fire")
-	static function btnp(?index:Int, ?player:Int):Bool;
+	static function btnp(index:Int, ?player:Int):Bool;
 	//}
 	//{ audio
 	static function sfx(sound:Int, ?channel:Int, ?offset:Fixed):Void;
@@ -146,6 +146,7 @@ extern class Pico {
 	//}
 	//{ math
 	static function sub(s:String, from:Int, ?to:Int):String;
+	@:native("`length") static function strlen(s:String):Int;
 	static function flr(x:Fixed):Int;
 	static function abs(x:Fixed):Fixed;
 	@:native("sgn") static function sign(x:Fixed):Int;
@@ -158,12 +159,10 @@ extern class Pico {
 	static function atan2(x:Fixed, y:Fixed):Fixed;
 	/// Returns a random number between 0 (incl.) and x (excl.)
 	@:native("rnd") static function rand(x:Fixed):Fixed;
-	/// Returns a random integer between 0 (incl.) and x (excl.)
-	static inline function irand(x:Int):Int {
-		return flr(rand(x));
-	}
-	@:native("srand") static function srand(seed:Int):Void;
+	static function srand(seed:Int):Void;
 	/// maps to Lua' arithmetic loop.
 	static function loop(from:Fixed, to:Fixed, step:Fixed = 1):Iterator<Fixed>;
+	///
+	@:native("loop") static function iloop(from:Int, to:Int, step:Int = 1):Iterator<Int>;
 	//}
 }

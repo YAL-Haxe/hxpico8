@@ -19,11 +19,6 @@ class PgExprField {
 			ct = ct_ref.get();
 			cf = cf_ref.get();
 			var cf_name = cf.name;
-			if (cf_name == "length" && ct.name == "Array" && ct.pack.length == 0) {
-				r.addChar("#".code);
-				r.addExpr(e);
-				return;
-			}
 			// decide whether to use static (class_field) or dynamic (inst.field) access:
 			var is_dynamic = false;
 			switch (cf.kind) {

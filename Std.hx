@@ -4,9 +4,9 @@ package;
  * ...
  * @author YellowAfterlife
  */
-extern class Std {
-	static inline function random(x:Int):Int {
-		return Pico.irand(x);
+class Std {
+	static function random(x:Int):Int {
+		return Pico.flr(Pico.rand(x));
 	}
 }
 #else

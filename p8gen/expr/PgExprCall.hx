@@ -114,6 +114,10 @@ class PgExprCall {
 			}
 			r.addChar(")".code);
 		}
+		case "`length": {
+			r.addChar("#".code);
+			r.addExpr(args[0]);
+		}
 		case "collection": {
 			switch (args[0].expr) {
 			case TArrayDecl(args):
