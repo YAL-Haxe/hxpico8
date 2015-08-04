@@ -96,7 +96,7 @@ extern class Pico {
 	
 	/// Prints a string.
 	/// If only first argument is supplied, and the cursor reaches the end of the screen, a carriage return and vertical scroll is automatically applied. (terminal-like behaviour)
-	static function print(value:Dynamic, ?x:Fixed, ?y:Fixed):Void;
+	static function print(value:Dynamic, ?x:Fixed, ?y:Fixed, ?color:Int):Void;
 	//
 	static function line(x1:Fixed, y1:Fixed, x2:Fixed, y:Fixed, ?color:Int):Void;
 	static function circ(x:Fixed, y:Fixed, r:Fixed, ?color:Int):Void;
