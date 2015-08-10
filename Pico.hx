@@ -145,7 +145,7 @@ extern class Pico {
 	static function cstore(?dest:Int, ?src:Int, ?len:Int):Void;
 	//}
 	//{ math
-	static function sub(s:String, from:Int, ?to:Int):String;
+	static function sub(s:String, from:Fixed, ?to:Fixed):String;
 	@:native("`length") static function strlen(s:String):Int;
 	static function flr(x:Fixed):Int;
 	static function abs(x:Fixed):Fixed;
@@ -159,7 +159,7 @@ extern class Pico {
 	static function atan2(x:Fixed, y:Fixed):Fixed;
 	/// Returns a random number between 0 (incl.) and x (excl.)
 	@:native("rnd") static function rand(x:Fixed):Fixed;
-	static function srand(seed:Int):Void;
+	static function srand(seed:Fixed):Void;
 	/// maps to Lua' arithmetic loop.
 	static function loop(from:Fixed, to:Fixed, step:Fixed = 1):Iterator<Fixed>;
 	///
