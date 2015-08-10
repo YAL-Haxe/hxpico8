@@ -203,16 +203,25 @@ class PgExpr {
 		}
 		case TArrayDecl(args): {
 			r.addChar("{".code);
-			if (args.length > 0) {
+			var len = args.length;
+			var pos = 0;
+			if (len > 0) switch (args[0].expr) {
+				case TConst(TNull): pos++;
+				default:
+			}
+			if (pos < len) {
 				r.addSep();
-				r.addChar("[".code);
-				r.addInt(0);
-				r.addChar("]".code);
-				r.addSepChar("=".code);
+				if (pos != 1) {
+					r.addChar("[".code);
+					r.addInt(0);
+					r.addChar("]".code);
+					r.addSepChar("=".code);
+				}
 				var trail = false;
-				for (arg in args) {
+				while (pos < len) {
 					if (trail) r.addComma(); else trail = true;
-					r.addExpr(arg);
+					r.addExpr(args[pos]);
+					pos++;
 				}
 				r.addSep();
 			} else r.addSep();
