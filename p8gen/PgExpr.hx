@@ -428,7 +428,7 @@ class PgExpr {
 		return { expr: expr, pos: src.pos, t: src.t };
 	}
 	static inline function makeVar(name:String, ?type:Type, ?id:Int):TVar {
-		return { name: name, id: id, t: type, capture: false, extra: null };
+		return { name: name, id: id, t: type, capture: false, extra: null, meta: null };
 	}
 	static inline function makeRef<T>(v:T):Ref<T> {
 		return {

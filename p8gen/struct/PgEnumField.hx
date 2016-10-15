@@ -26,7 +26,8 @@ class PgEnumField extends PgField {
 					name: arg.name,
 					t: arg.t,
 					capture: null,
-					extra: null
+					extra: null,
+					meta: null
 				},
 			});
 		}
